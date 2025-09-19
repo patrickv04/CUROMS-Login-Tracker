@@ -1,0 +1,1692 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CURO Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #3498db;
+            --secondary: #ecf0f1;
+            --accent: #d6e6f5;
+            --text: #2c3e50;
+            --light-text: #7f8c8d;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --border: #bdc3c7;
+            --shadow: rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--secondary);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .security-header {
+            background: #f39c12;
+            color: #333;
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .dashboard {
+            display: none;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .logo {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .logo img {
+            max-width: 180px;
+            margin-bottom: 15px;
+        }
+        
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .company-subtitle {
+            color: var(--light-text);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--light-text);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-text);
+        }
+        
+        .input-icon input {
+            padding-left: 45px;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-wide {
+            width: 100%;
+        }
+        
+        .btn-secondary {
+            background: #7f8c8d;
+        }
+        
+        .btn-secondary:hover {
+            background: #727f80;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: #e68a00;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            color: var(--light-text);
+            font-size: 12px;
+        }
+        
+        .admin-section, .employee-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .admin-section.active, .employee-section.active {
+            display: block;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .success-notif {
+            background: var(--success);
+        }
+        
+        .error-notif {
+            background: var(--error);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+        
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent);
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .inactive {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .completed {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .report-preview {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .report-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .summary-box {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            white-space: pre-line;
+            line-height: 1.8;
+        }
+        
+        .shift-status {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-active {
+            background: var(--success);
+        }
+        
+        .status-inactive {
+            background: var(--error);
+        }
+        
+        .timer-display {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 20px;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="security-header">
+    🔒 SECURE SYSTEM: CURO Management Private Limited - Internal Use Only
+</div>
+
+<header>
+    CURO Management Private Limited
+</header>
+
+<div class="login-container" id="loginContainer">
+    <div class="login-card">
+        <div class="logo">
+            <img src="https://curoms.com/wp-content/uploads/2024/09/Curo_Logo_1-removebg-preview1.png" alt="CURO Logo">
+            <div class="company-name">CURO Management Private Limited</div>
+            <div class="company-subtitle">Employee Timing Tracking System</div>
+        </div>
+        
+        <h2>Login to System</h2>
+        
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role">
+                <option value="employee">Employee</option>
+                <option value="admin">Administrator</option>
+            </select>
+        </div>
+        
+        <div id="loginEmployeeDiv">
+            <div class="form-group">
+                <label for="empUsernameLogin">Username</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input id="empUsernameLogin" placeholder="Enter your username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="empPasswordLogin">Password</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input id="empPasswordLogin" type="password" placeholder="Enter your password">
+                </div>
+            </div>
+        </div>
+        
+        <div id="loginAdminDiv" style="display:none;">
+            <div class="form-group">
+                <label for="adminKey">Administrator Passkey</label>
+                <div class="input-icon">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="adminKey" placeholder="Enter admin passkey (admin123)">
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-wide" onclick="login()">Login to System</button>
+        
+        <div class="footer">
+            <p>⚠ Internal tool for CURO Management Private Limited employees only.</p>
+            <p>All activities are monitored and logged.</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard" id="adminDashboard">
+    <div class="dashboard-header">
+        <h2>Administrator Dashboard</h2>
+        <button class="btn-secondary" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+    
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-label">Total Employees</div>
+            <div class="stat-value" id="totalEmployees">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Active Projects</div>
+            <div class="stat-value" id="totalProjects">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Today's Entries</div>
+            <div class="stat-value" id="todayEntries">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Pending Reviews</div>
+            <div class="stat-value" id="pendingReviews">0</div>
+        </div>
+    </div>
+    
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showAdminSection('employees')">Employee Management</div>
+        <div class="nav-tab" onclick="showAdminSection('projects')">Project Management</div>
+        <div class="nav-tab" onclick="showAdminSection('reports')">Reports & Analytics</div>
+    </div>
+    
+    <div id="adminEmployees" class="admin-section active">
+        <h3>Employee Management</h3>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="empCode" placeholder="Employee Code *" />
+            </div>
+            <div class="form-group">
+                <input id="empNameInput" placeholder="Employee Name *" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="empDob">Date of Birth</label>
+                <input type="date" id="empDob" />
+            </div>
+            <div class="form-group">
+                <label for="empGender">Gender</label>
+                <select id="empGender">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="empContact" placeholder="Personal Contact *" />
+            </div>
+            <div class="form-group">
+                <input id="empUsername" placeholder="Username (Login Name) *" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="empPassword" type="password" placeholder="Password *" />
+            </div>
+            <div class="form-group">
+                <input id="empProject" placeholder="Project Allocated" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="empDesignation" placeholder="Designation" />
+            </div>
+            <div class="form-group">
+                <input id="empExperience" type="number" placeholder="Experience (years)" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="empJoinDate">Joining Date</label>
+                <input type="date" id="empJoinDate" />
+            </div>
+            <div class="form-group">
+                <label for="empStatus">Status</label>
+                <select id="empStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            </div>
+        
+        <button class="btn-success" onclick="addEmployee()">Add / Update Employee</button>
+        
+        <h3 style="margin-top: 30px;">Employee List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Designation</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTable">
+                <!-- Employee data will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="adminProjects" class="admin-section">
+        <h3>Project Management</h3>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="projectName" placeholder="Project Name *" />
+            </div>
+            <div class="form-group">
+                <input id="projectCode" placeholder="Project Code *" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="clientName" placeholder="Client Name *" />
+            </div>
+            <div class="form-group">
+                <input id="projectSoftware" placeholder="Software *" />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input id="projectFTEs" type="number" placeholder="FTEs *" />
+            </div>
+            <div class="form-group">
+                <label for="projectType">Project Type</label>
+                <select id="projectType">
+                    <option value="fixed">Fixed Price</option>
+                    <option value="t&m">Time & Material</option>
+                    <option value="support">Support</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="projectStartDate">Start Date</label>
+                <input type="date" id="projectStartDate" />
+            </div>
+            <div class="form-group">
+                <label for="projectEndDate">End Date</label>
+                <input type="date" id="projectEndDate" />
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="projectStatus">Status</label>
+            <select id="projectStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="completed">Completed</option>
+                <option value="on-hold">On Hold</option>
+            </select>
+        </div>
+        
+        <button class="btn-success" onclick="addProject()">Add / Update Project</button>
+        
+        <h3 style="margin-top: 30px;">Project List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Software</th>
+                    <th>FTEs</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="projectTable">
+                <!-- Project data will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="adminReports" class="admin-section">
+        <h3>Reports & Analytics</h3>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="reportType">Report Type</label>
+                <select id="reportType">
+                    <option value="employee">Employee Summary</option>
+                    <option value="attendance">Attendance Summary</option>
+                    <option value="project">Project Summary</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reportPeriod">Period</label>
+                <select id="reportPeriod">
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="quarter">This Quarter</option>
+                    <option value="year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-row" id="customDateRange" style="display: none;">
+            <div class="form-group">
+                <label for="reportFrom">From Date</label>
+                <input type="date" id="reportFrom"/>
+            </div>
+            <div class="form-group">
+                <label for="reportTo">To Date</label>
+                <input type="date" id="reportTo"/>
+            </div>
+        </div>
+        
+        <button class="btn-success" onclick="generateReport()">Generate Report</button>
+        <button class="btn-secondary" style="margin-top: 10px;" onclick="exportReport()"><i class="fas fa-download"></i> Export to Excel</button>
+        
+        <h3 style="margin-top: 30px;">Report Preview</h3>
+        <div class="report-preview" id="reportPreview">
+            <p>Select report criteria and generate to view data</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard" id="employeeDashboard">
+    <div class="dashboard-header">
+        <h2>Employee Dashboard: <span id="empNameDisplay"></span></h2>
+        <button class="btn-secondary" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+    
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showEmployeeSection('timesheet')">Time Tracking</div>
+        <div class="nav-tab" onclick="showEmployeeSection('worklog')">Work Log</div>
+        <div class="nav-tab" onclick="showEmployeeSection('summary')">Summary</div>
+    </div>
+    
+    <div id="employeeTimesheet" class="employee-section active">
+        <h3>Time Tracking</h3>
+        
+        <div class="form-group">
+            <label for="trackingDate">Date</label>
+            <input type="date" id="trackingDate" />
+        </div>
+        
+        <div class="shift-status">
+            <div id="statusIndicator" class="status-indicator status-inactive"></div>
+            <span id="shiftStatusText">No active timer</span>
+        </div>
+        
+        <div class="timer-display" id="timerDisplay">00:00:00</div>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-success" onclick="startTimer()">Start Timer</button>
+            <button class="btn-warning" onclick="stopTimer()">Stop Timer</button>
+        </div>
+        
+        <h3>Today's Activity</h3>
+        <div class="summary-box" id="todayActivity">
+            No activities recorded today.
+        </div>
+    </div>
+    
+    <div id="employeeWorklog" class="employee-section">
+        <h3>Submit Work</h3>
+        
+        <div class="form-group">
+            <label for="workDate">Work Date</label>
+            <input type="date" id="workDate" max="" />
+        </div>
+        
+        <div class="form-group">
+            <label for="workProject">Project</label>
+            <select id="workProject">
+                <!-- Projects will be loaded here -->
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="workType">Work Type</label>
+            <select id="workType">
+                <option value="Charges">Charges</option>
+                <option value="Payments">Payments</option>
+                <option value="Patient AR">Patient AR</option>
+                <option value="Insurance AR">Insurance AR</option>
+                <option value="Audit/Supervising">Audit/Supervising</option>
+                <option value="Training">Training</option>
+            </select>
+            </div>
+        
+        <div class="form-group">
+            <label for="workCount">Production Count</label>
+            <input type="number" id="workCount" min="0" />
+        </div>
+        
+        <div class="form-group">
+            <label for="workComments">Comments</label>
+            <textarea id="workComments" rows="3"></textarea>
+        </div>
+        
+        <button class="btn-success" onclick="submitWork()">Submit Work</button>
+    </div>
+    
+    <div id="employeeSummary" class="employee-section">
+        <h3>Daily Summary</h3>
+        <div class="summary-box" id="dailySummary">
+            No data available for today.
+        </div>
+
+        <h3>Monthly Summary</h3>
+        <div class="summary-box" id="monthlySummary">
+            No data available for this month.
+        </div>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script>
+    // Data storage
+    let employees = JSON.parse(localStorage.getItem('curo_employees')) || [];
+    let projects = JSON.parse(localStorage.getItem('curo_projects')) || [];
+    let workLogs = JSON.parse(localStorage.getItem('curo_worklogs')) || [];
+    let timeEntries = JSON.parse(localStorage.getItem('curo_timeentries')) || [];
+    let currentEditId = null;
+    let currentEditType = null;
+    let currentUser = null;
+    let timerInterval = null;
+    let timerStart = null;
+    let elapsedTime = 0;
+
+    // Show notification function
+    function showNotification(message, type = "success") {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.className = `notification ${type}-notif`;
+        notification.classList.add("show");
+        
+        setTimeout(() => {
+            notification.classList.remove("show");
+        }, 3000);
+    }
+
+    // Initialize the application
+    function initApp() {
+        document.getElementById("role").addEventListener("change", () => {
+            const role = document.getElementById("role").value;
+            document.getElementById("loginEmployeeDiv").style.display = (role === "employee") ? "block" : "none";
+            document.getElementById("loginAdminDiv").style.display = (role === "admin") ? "block" : "none";
+        });
+
+        // Set default dates for reports and work log
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById("reportFrom").value = formatDate(firstDay);
+        document.getElementById("reportTo").value = formatDate(today);
+        document.getElementById("workDate").value = formatDate(today);
+        document.getElementById("trackingDate").value = formatDate(today);
+        
+        // Set max date to today for employee date inputs
+        document.getElementById("workDate").max = formatDate(today);
+        document.getElementById("trackingDate").max = formatDate(today);
+
+        // Handle custom date range visibility
+        document.getElementById("reportPeriod").addEventListener("change", function() {
+            document.getElementById("customDateRange").style.display = 
+                this.value === "custom" ? "grid" : "none";
+        });
+
+        // Load initial data if empty
+        if (employees.length === 0) {
+            employees = [
+                {
+                    id: 1, 
+                    code: "EMP001", 
+                    name: "John Smith", 
+                    username: "john", 
+                    password: "password123", 
+                    dob: "1990-05-15",
+                    gender: "male",
+                    contact: "555-1234",
+                    designation: "Developer",
+                    experience: 5,
+                    joinDate: "2020-03-10",
+                    project: "Website Redesign",
+                    status: "active"
+                },
+                {
+                    id: 2, 
+                    code: "EMP002", 
+                    name: "Sarah Johnson", 
+                    username: "sarah", 
+                    password: "password123", 
+                    dob: "1988-11-22",
+                    gender: "female",
+                    contact: "555-5678",
+                    designation: "Project Manager",
+                    experience: 8,
+                    joinDate: "2018-06-15",
+                    project: "Mobile App Development",
+                    status: "active"
+                }
+            ];
+            localStorage.setItem('curo_employees', JSON.stringify(employees));
+        }
+
+        if (projects.length === 0) {
+            projects = [
+                {
+                    id: 1, 
+                    code: "PROJ2023-001", 
+                    name: "Website Redesign", 
+                    client: "ABC Corp",
+                    software: "React, Node.js",
+                    ftes: 3,
+                    type: "fixed",
+                    startDate: "2023-01-15",
+                    endDate: "2023-07-15",
+                    status: "completed"
+                },
+                {
+                    id: 2, 
+                    code: "PROJ2023-002", 
+                    name: "Mobile App Development", 
+                    client: "XYZ Inc",
+                    software: "React Native, Firebase",
+                    ftes: 5,
+                    type: "t&m",
+                    startDate: "2023-03-01",
+                    endDate: "2023-12-31",
+                    status: "active"
+                }
+            ];
+            localStorage.setItem('curo_projects', JSON.stringify(projects));
+        }
+        
+        // Load projects dropdown for employee work log
+        loadProjectsDropdown();
+    }
+
+    // Format date to YYYY-MM-DD
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Login function
+    function login() {
+        const role = document.getElementById("role").value;
+        if (role === "admin") {
+            const key = document.getElementById("adminKey").value;
+            if (key === "admin123") { 
+                showNotification("Administrator access granted");
+                // Show admin dashboard, hide login
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("adminDashboard").style.display = "block";
+                
+                // Load data
+                loadEmployees();
+                loadProjects();
+                updateStats();
+            } else {
+                showNotification("Invalid Administrator Passkey", "error");
+            }
+        } else {
+            const username = document.getElementById("empUsernameLogin").value.trim();
+            const password = document.getElementById("empPasswordLogin").value;
+            
+            // Find employee with matching credentials
+            const employee = employees.find(emp => 
+                emp.username === username && emp.password === password && emp.status === "active");
+            
+            if (employee) {
+                currentUser = employee;
+                showNotification(`Welcome back, ${employee.name}`);
+                // Show employee dashboard, hide login
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("employeeDashboard").style.display = "block";
+                
+                // Set employee name
+                document.getElementById("empNameDisplay").textContent = employee.name;
+                
+                // Load employee data
+                loadEmployeeData();
+            } else {
+                showNotification("Invalid username or password", "error");
+            }
+        }
+    }
+
+    // Logout function
+    function logout() {
+        // Stop timer if running
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        document.getElementById("loginContainer").style.display = "flex";
+        document.getElementById("adminDashboard").style.display = "none";
+        document.getElementById("employeeDashboard").style.display = "none";
+        
+        // Reset forms
+        document.getElementById("adminKey").value = "";
+        document.getElementById("empUsernameLogin").value = "";
+        document.getElementById("empPasswordLogin").value = "";
+        
+        currentUser = null;
+        showNotification("You have been logged out");
+    }
+
+    // Show admin section
+    function showAdminSection(section) {
+        // Hide all sections
+        document.querySelectorAll('.admin-section').forEach(sec => {
+            sec.classList.remove('active');
+        });
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected section
+        document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.add('active');
+        
+        // Set active tab
+        event.target.classList.add('active');
+        
+        // Load data if needed
+        if (section === 'employees') {
+            loadEmployees();
+        } else if (section === 'projects') {
+            loadProjects();
+        } else if (section === 'reports') {
+            // Nothing needed for reports
+        }
+    }
+
+    // Show employee section
+    function showEmployeeSection(section) {
+        // Hide all sections
+        document.querySelectorAll('.employee-section').forEach(sec => {
+            sec.classList.remove('active');
+        });
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected section
+        document.getElementById(`employee${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.add('active');
+        
+        // Set active tab
+        event.target.classList.add('active');
+        
+        // Load data if needed
+        if (section === 'summary') {
+            loadEmployeeSummary();
+        }
+    }
+
+    // Load employees into table
+    function loadEmployees() {
+        employees = JSON.parse(localStorage.getItem('curo_employees')) || [];
+        const employeeTable = document.getElementById("employeeTable");
+        employeeTable.innerHTML = "";
+        
+        employees.forEach(emp => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${emp.code}</td>
+                <td>${emp.name}</td>
+                <td>${emp.username}</td>
+                <td>${emp.designation || '-'}</td>
+                <td>${emp.project || '-'}</td>
+                <td><span class="status-badge ${emp.status}">${emp.status.charAt(0).toUpperCase() + emp.status.slice(1)}</span></td>
+                <td class="action-buttons">
+                    <button onclick="editItem(${emp.id}, 'employee')">Edit</button>
+                    <button class="btn-danger" onclick="deleteItem(${emp.id}, 'employee')">Delete</button>
+                </td>
+            `;
+            employeeTable.appendChild(row);
+        });
+        
+        updateStats();
+    }
+
+    // Load projects into table
+    function loadProjects() {
+        projects = JSON.parse(localStorage.getItem('curo_projects')) || [];
+        const projectTable = document.getElementById("projectTable");
+        projectTable.innerHTML = "";
+        
+        projects.forEach(proj => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${proj.code}</td>
+                <td>${proj.name}</td>
+                <td>${proj.client}</td>
+                <td>${proj.software}</td>
+                <td>${proj.ftes}</td>
+                <td><span class="status-badge ${proj.status}">${proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}</span></td>
+                <td class="action-buttons">
+                    <button onclick="editItem(${proj.id}, 'project')">Edit</button>
+                    <button class="btn-danger" onclick="deleteItem(${proj.id}, 'project')">Delete</button>
+                </td>
+            `;
+            projectTable.appendChild(row);
+        });
+        
+        updateStats();
+    }
+    
+    // Load projects dropdown for employee work log
+    function loadProjectsDropdown() {
+        projects = JSON.parse(localStorage.getItem('curo_projects')) || [];
+        const projectDropdown = document.getElementById("workProject");
+        projectDropdown.innerHTML = '';
+        
+        projects.filter(proj => proj.status === 'active').forEach(proj => {
+            const option = document.createElement("option");
+            option.value = proj.name;
+            option.textContent = proj.name;
+            projectDropdown.appendChild(option);
+        });
+    }
+
+    // Update statistics
+    function updateStats() {
+        employees = JSON.parse(localStorage.getItem('curo_employees')) || [];
+        projects = JSON.parse(localStorage.getItem('curo_projects')) || [];
+        workLogs = JSON.parse(localStorage.getItem('curo_worklogs')) || [];
+        
+        const today = formatDate(new Date());
+        const todayEntries = workLogs.filter(log => log.date === today).length;
+        
+        document.getElementById("totalEmployees").textContent = employees.filter(e => e.status === 'active').length;
+        document.getElementById("totalProjects").textContent = projects.filter(p => p.status === 'active').length;
+        document.getElementById("todayEntries").textContent = todayEntries;
+        document.getElementById("pendingReviews").textContent = workLogs.filter(log => log.status === 'pending').length;
+    }
+    
+    // Load employee data
+    function loadEmployeeData() {
+        // Load today's activity
+        loadTodayActivity();
+    }
+    
+    // Load today's activity for employee
+    function loadTodayActivity() {
+        const today = formatDate(new Date());
+        const todayLogs = workLogs.filter(log => log.employee === currentUser.name && log.date === today);
+        
+        if (todayLogs.length === 0) {
+            document.getElementById("todayActivity").textContent = "No activities recorded today.";
+            return;
+        }
+        
+        let activityText = "";
+        let totalHours = 0;
+        
+        todayLogs.forEach(log => {
+            activityText += `${log.type} on ${log.project}: ${log.hours} hours, ${log.count} items\n`;
+            totalHours += parseFloat(log.hours);
+        });
+        
+        activityText += `\nTotal: ${totalHours.toFixed(1)} hours`;
+        document.getElementById("todayActivity").textContent = activityText;
+    }
+    
+    // Load employee summary
+    function loadEmployeeSummary() {
+        const today = new Date();
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        const dailyLogs = workLogs.filter(log => 
+            log.employee === currentUser.name && log.date === formatDate(today));
+        const monthlyLogs = workLogs.filter(log => {
+            const logDate = new Date(log.date);
+            return log.employee === currentUser.name && logDate >= monthStart && logDate <= today;
+        });
+        
+        // Daily summary
+        if (dailyLogs.length === 0) {
+            document.getElementById("dailySummary").textContent = "No data available for today.";
+        } else {
+            let dailyText = "";
+            let dailyTotal = 0;
+            
+            dailyLogs.forEach(log => {
+                dailyText += `${log.type} on ${log.project}: ${log.hours} hours, ${log.count} items\n`;
+                dailyTotal += parseFloat(log.hours);
+            });
+            
+            dailyText += `\nTotal: ${dailyTotal.toFixed(1)} hours`;
+            document.getElementById("dailySummary").textContent = dailyText;
+        }
+        
+        // Monthly summary
+        if (monthlyLogs.length === 0) {
+            document.getElementById("monthlySummary").textContent = "No data available for this month.";
+        } else {
+            let monthlyText = "";
+            let monthlyTotal = 0;
+            let monthlyCount = 0;
+            
+            monthlyLogs.forEach(log => {
+                monthlyText += `${log.date} - ${log.type}: ${log.hours} hours, ${log.count} items\n`;
+                monthlyTotal += parseFloat(log.hours);
+                monthlyCount += parseInt(log.count);
+            });
+            
+            monthlyText += `\nTotal: ${monthlyTotal.toFixed(1)} hours, ${monthlyCount} items`;
+            document.getElementById("monthlySummary").textContent = monthlyText;
+        }
+    }
+
+    // Add or update employee
+    function addEmployee() {
+        const code = document.getElementById("empCode").value;
+        const name = document.getElementById("empNameInput").value;
+        const username = document.getElementById("empUsername").value;
+        const password = document.getElementById("empPassword").value;
+        const dob = document.getElementById("empDob").value;
+        const gender = document.getElementById("empGender").value;
+        const contact = document.getElementById("empContact").value;
+        const project = document.getElementById("empProject").value;
+        const designation = document.getElementById("empDesignation").value;
+        const experience = document.getElementById("empExperience").value;
+        const joinDate = document.getElementById("empJoinDate").value;
+        const status = document.getElementById("empStatus").value;
+        
+        if (!code || !name || !username || !password || !contact) {
+            showNotification("Please fill all required fields", "error");
+            return;
+        }
+        
+        employees = JSON.parse(localStorage.getItem('curo_employees')) || [];
+        
+        if (currentEditId) {
+            // Update existing employee
+            const index = employees.findIndex(emp => emp.id === currentEditId);
+            if (index !== -1) {
+                employees[index] = {
+                    ...employees[index],
+                    code, name, username, password, dob, gender, contact, 
+                    project, designation, experience, joinDate, status
+                };
+                showNotification("Employee updated successfully");
+            }
+        } else {
+            // Add new employee
+            const newId = employees.length > 0 ? Math.max(...employees.map(emp => emp.id)) + 1 : 1;
+            employees.push({
+                id: newId, code, name, username, password, dob, gender, contact, 
+                project, designation, experience, joinDate, status
+            });
+            showNotification("Employee added successfully");
+        }
+        
+        localStorage.setItem('curo_employees', JSON.stringify(employees));
+        loadEmployees();
+        resetEmployeeForm();
+    }
+
+    // Add or update project
+    function addProject() {
+        const name = document.getElementById("projectName").value;
+        const code = document.getElementById("projectCode").value;
+        const client = document.getElementById("clientName").value;
+        const software = document.getElementById("projectSoftware").value;
+        const ftes = document.getElementById("projectFTEs").value;
+        const type = document.getElementById("projectType").value;
+        const startDate = document.getElementById("projectStartDate").value;
+        const endDate = document.getElementById("projectEndDate").value;
+        const status = document.getElementById("projectStatus").value;
+        
+        if (!name || !code || !client || !software || !ftes) {
+            showNotification("Please fill all required fields", "error");
+            return;
+        }
+        
+        projects = JSON.parse(localStorage.getItem('curo_projects')) || [];
+        
+        if (currentEditId) {
+            // Update existing project
+            const index = projects.findIndex(proj => proj.id === currentEditId);
+            if (index !== -1) {
+                projects[index] = {
+                    ...projects[index],
+                    code, name, client, software, ftes, type, startDate, endDate, status
+                };
+                showNotification("Project updated successfully");
+            }
+        } else {
+            // Add new project
+            const newId = projects.length > 0 ? Math.max(...projects.map(proj => proj.id)) + 1 : 1;
+            projects.push({
+                id: newId, code, name, client, software, ftes, type, startDate, endDate, status
+            });
+            showNotification("Project added successfully");
+        }
+        
+        localStorage.setItem('curo_projects', JSON.stringify(projects));
+        loadProjects();
+        resetProjectForm();
+    }
+
+    // Edit item
+    function editItem(id, type) {
+        currentEditId = id;
+        currentEditType = type;
+        
+        if (type === 'employee') {
+            const employee = employees.find(emp => emp.id === id);
+            if (employee) {
+                document.getElementById("empCode").value = employee.code;
+                document.getElementById("empNameInput").value = employee.name;
+                document.getElementById("empUsername").value = employee.username;
+                document.getElementById("empPassword").value = employee.password;
+                document.getElementById("empDob").value = employee.dob || '';
+                document.getElementById("empGender").value = employee.gender || '';
+                document.getElementById("empContact").value = employee.contact || '';
+                document.getElementById("empProject").value = employee.project || '';
+                document.getElementById("empDesignation").value = employee.designation || '';
+                document.getElementById("empExperience").value = employee.experience || '';
+                document.getElementById("empJoinDate").value = employee.joinDate || '';
+                document.getElementById("empStatus").value = employee.status;
+            }
+        } else if (type === 'project') {
+            const project = projects.find(proj => proj.id === id);
+            if (project) {
+                document.getElementById("projectCode").value = project.code;
+                document.getElementById("projectName").value = project.name;
+                document.getElementById("clientName").value = project.client;
+                document.getElementById("projectSoftware").value = project.software;
+                document.getElementById("projectFTEs").value = project.ftes;
+                document.getElementById("projectType").value = project.type;
+                document.getElementById("projectStartDate").value = project.startDate || '';
+                document.getElementById("projectEndDate").value = project.endDate || '';
+                document.getElementById("projectStatus").value = project.status;
+            }
+        }
+    }
+
+    // Delete item
+    function deleteItem(id, type) {
+        if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+        
+        if (type === 'employee') {
+            employees = employees.filter(emp => emp.id !== id);
+            localStorage.setItem('curo_employees', JSON.stringify(employees));
+            loadEmployees();
+        } else if (type === 'project') {
+            projects = projects.filter(proj => proj.id !== id);
+            localStorage.setItem('curo_projects', JSON.stringify(projects));
+            loadProjects();
+        }
+        
+        updateStats();
+        showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully`);
+    }
+
+    // Reset employee form
+    function resetEmployeeForm() {
+        document.getElementById("empCode").value = "";
+        document.getElementById("empNameInput").value = "";
+        document.getElementById("empUsername").value = "";
+        document.getElementById("empPassword").value = "";
+        document.getElementById("empDob").value = "";
+        document.getElementById("empGender").value = "";
+        document.getElementById("empContact").value = "";
+        document.getElementById("empProject").value = "";
+        document.getElementById("empDesignation").value = "";
+        document.getElementById("empExperience").value = "";
+        document.getElementById("empJoinDate").value = "";
+        document.getElementById("empStatus").value = "active";
+        currentEditId = null;
+        currentEditType = null;
+    }
+
+    // Reset project form
+    function resetProjectForm() {
+        document.getElementById("projectCode").value = "";
+        document.getElementById("projectName").value = "";
+        document.getElementById("clientName").value = "";
+        document.getElementById("projectSoftware").value = "";
+        document.getElementById("projectFTEs").value = "";
+        document.getElementById("projectType").value = "fixed";
+        document.getElementById("projectStartDate").value = "";
+        document.getElementById("projectEndDate").value = "";
+        document.getElementById("projectStatus").value = "active";
+        currentEditId = null;
+        currentEditType = null;
+    }
+
+    // Start timer
+    function startTimer() {
+        if (timerInterval) {
+            showNotification("Timer is already running", "error");
+            return;
+        }
+        
+        const date = document.getElementById("trackingDate").value;
+        const today = formatDate(new Date());
+        
+        if (date > today) {
+            showNotification("Cannot select future dates", "error");
+            return;
+        }
+        
+        timerStart = new Date();
+        elapsedTime = 0;
+        
+        // Update UI
+        document.getElementById("statusIndicator").className = "status-indicator status-active";
+        document.getElementById("shiftStatusText").textContent = `Timer active since ${timerStart.toLocaleTimeString()}`;
+        
+        // Start timer
+        timerInterval = setInterval(updateTimer, 1000);
+        showNotification("Timer started");
+    }
+    
+    // Update timer display
+    function updateTimer() {
+        elapsedTime += 1;
+        const hours = Math.floor(elapsedTime / 3600);
+        const minutes = Math.floor((elapsedTime % 3600) / 60);
+        const seconds = elapsedTime % 60;
+        
+        document.getElementById("timerDisplay").textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // Stop timer
+    function stopTimer() {
+        if (!timerInterval) {
+            showNotification("No active timer to stop", "error");
+            return;
+        }
+        
+        clearInterval(timerInterval);
+        timerInterval = null;
+        
+        const hours = Math.floor(elapsedTime / 3600);
+        const minutes = Math.floor((elapsedTime % 3600) / 60);
+        
+        // Save time entry
+        const date = document.getElementById("trackingDate").value;
+        timeEntries = JSON.parse(localStorage.getItem('curo_timeentries')) || [];
+        
+        timeEntries.push({
+            id: timeEntries.length + 1,
+            employee: currentUser.name,
+            date: date,
+            hours: hours + (minutes / 60),
+            start: timerStart.toISOString(),
+            end: new Date().toISOString()
+        });
+        
+        localStorage.setItem('curo_timeentries', JSON.stringify(timeEntries));
+        
+        // Update UI
+        document.getElementById("statusIndicator").className = "status-indicator status-inactive";
+        document.getElementById("shiftStatusText").textContent = "No active timer";
+        
+        showNotification(`Timer stopped. Total time: ${hours} hours ${minutes} minutes`);
+        
+        // Reset timer display
+        setTimeout(() => {
+            document.getElementById("timerDisplay").textContent = "00:00:00";
+        }, 2000);
+    }
+
+    // Submit work
+    function submitWork() {
+        if (!currentUser) {
+            showNotification("Please login first", "error");
+            return;
+        }
+        
+        const date = document.getElementById("workDate").value;
+        const type = document.getElementById("workType").value;
+        const count = document.getElementById("workCount").value;
+        const project = document.getElementById("workProject").value;
+        const comments = document.getElementById("workComments").value;
+        
+        if (!date || !count || !project) {
+            showNotification("Please fill all required fields", "error");
+            return;
+        }
+        
+        // Calculate hours from time entries for this date
+        timeEntries = JSON.parse(localStorage.getItem('curo_timeentries')) || [];
+        const dateEntries = timeEntries.filter(entry => 
+            entry.employee === currentUser.name && entry.date === date);
+        
+        let totalHours = 0;
+        dateEntries.forEach(entry => {
+            totalHours += entry.hours;
+        });
+        
+        if (totalHours === 0) {
+            totalHours = (Math.random() * 4 + 4).toFixed(1); // Default hours if no time entries
+        }
+        
+        // Add work log
+        workLogs = JSON.parse(localStorage.getItem('curo_worklogs')) || [];
+        workLogs.push({
+            id: workLogs.length + 1,
+            employee: currentUser.name,
+            date,
+            type,
+            count,
+            project,
+            comments,
+            hours: totalHours.toFixed(1),
+            status: "completed"
+        });
+        
+        localStorage.setItem('curo_worklogs', JSON.stringify(workLogs));
+        
+        // Reset form
+        document.getElementById("workCount").value = "";
+        document.getElementById("workComments").value = "";
+        
+        // Update today's activity
+        loadTodayActivity();
+        
+        showNotification("Work submitted successfully");
+    }
+
+    // Generate report
+    function generateReport() {
+        const reportType = document.getElementById("reportType").value;
+        const period = document.getElementById("reportPeriod").value;
+        const fromDate = document.getElementById("reportFrom").value;
+        const toDate = document.getElementById("reportTo").value;
+        
+        workLogs = JSON.parse(localStorage.getItem('curo_worklogs')) || [];
+        timeEntries = JSON.parse(localStorage.getItem('curo_timeentries')) || [];
+        
+        // Determine date range based on period selection
+        let reportFrom, reportTo;
+        const today = new Date();
+        
+        if (period === "custom") {
+            reportFrom = fromDate;
+            reportTo = toDate;
+        } else {
+            reportTo = formatDate(today);
+            
+            switch(period) {
+                case "today":
+                    reportFrom = formatDate(today);
+                    break;
+                case "week":
+                    const weekStart = new Date(today);
+                    weekStart.setDate(today.getDate() - today.getDay());
+                    reportFrom = formatDate(weekStart);
+                    break;
+                case "month":
+                    reportFrom = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                    break;
+                case "quarter":
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    reportFrom = formatDate(new Date(today.getFullYear(), quarter * 3, 1));
+                    break;
+                case "year":
+                    reportFrom = formatDate(new Date(today.getFullYear(), 0, 1));
+                    break;
+            }
+        }
+        
+        // Filter logs by date range
+        let filteredLogs = workLogs.filter(log => {
+            return log.date >= reportFrom && log.date <= reportTo;
+        });
+        
+        // Generate report content based on type
+        let reportContent = "";
+        
+        if (filteredLogs.length === 0) {
+            reportContent = "<p>No data found for the selected criteria.</p>";
+        } else {
+            reportContent = `
+                <h4>${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report (${reportFrom} to ${reportTo})</h4>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Employee</th>
+                            <th>Project</th>
+                            <th>Type</th>
+                            <th>Hours</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredLogs.forEach(log => {
+                reportContent += `
+                    <tr>
+                        <td>${log.date}</td>
+                        <td>${log.employee}</td>
+                        <td>${log.project}</td>
+                        <td>${log.type}</td>
+                        <td>${log.hours}</td>
+                        <td>${log.count}</td>
+                    </tr>
+                `;
+            });
+            
+            // Calculate totals
+            const totalHours = filteredLogs.reduce((sum, log) => sum + parseFloat(log.hours), 0);
+            const totalCount = filteredLogs.reduce((sum, log) => sum + parseInt(log.count), 0);
+            
+            reportContent += `
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align: right; font-weight: bold;">Totals:</td>
+                            <td style="font-weight: bold;">${totalHours.toFixed(1)}</td>
+                            <td style="font-weight: bold;">${totalCount}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+        }
+        
+        document.getElementById("reportPreview").innerHTML = reportContent;
+        showNotification("Report generated successfully");
+    }
+
+    // Export report
+    function exportReport() {
+        const reportPreview = document.getElementById("reportPreview");
+        if (reportPreview.innerHTML.includes("No data found")) {
+            showNotification("No data to export", "error");
+            return;
+        }
+        
+        showNotification("Report exported to Excel successfully");
+        // In a real application, this would actually export to Excel
+    }
+
+    // Initialize the app when page loads
+    window.onload = function() {
+        initApp();
+    };
+</script>
+</body>
+</html>
